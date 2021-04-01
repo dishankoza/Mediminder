@@ -10,6 +10,9 @@ import 'package:medicine_reminder/src/ui/new_entry/new_entry_bloc.dart';
 import 'package:medicine_reminder/src/ui/success_screen/success_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:cron/cron.dart';
+import 'package:http/http.dart' as http;
+//import 'package:android_alarm_manager/android_alarm_manager.dart';
 
 class NewEntry extends StatefulWidget {
   @override
@@ -333,7 +336,12 @@ class _NewEntryState extends State<NewEntry> {
     var hour = int.parse(medicine.startTime[0] + medicine.startTime[1]);
     var ogValue = hour;
     var minute = int.parse(medicine.startTime[2] + medicine.startTime[3]);
-
+    final cron = Cron();
+    cron.schedule(Schedule.parse('$minute $hour * * *'), () async{
+      var url = 'https://dou3xa5lzk.execute-api.ap-south-1.amazonaws.com/default/voiceBot';
+      await http.post(url, body: {'name': 'doodle', 'color': 'blue'});
+    });
+    await Future.delayed(Duration(seconds: 20));
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'repeatDailyAtTime channel id',
       'repeatDailyAtTime channel name',
